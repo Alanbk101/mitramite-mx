@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { tramites } from "@/data/tramites";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 interface TramitesGridProps {
   search: string;
