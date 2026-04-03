@@ -16,6 +16,7 @@ const Index = () => {
         <HeroSection search={search} onSearchChange={setSearch} />
         <TramitesGrid search={search} />
         <HowItWorks />
+        <FAQSection />
       </main>
       <Footer />
     </div>
