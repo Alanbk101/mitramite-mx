@@ -35,7 +35,7 @@ const HowItWorks = () => {
         <div className="mt-12 grid gap-8 md:grid-cols-3">
           {steps.map(({ icon: Icon, title, desc }) => (
             <div key={title} className="flex flex-col items-center text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-brand text-white shadow-md">
                 <Icon size={28} />
               </div>
               <h3 className="mt-5 text-lg font-semibold text-foreground">{title}</h3>

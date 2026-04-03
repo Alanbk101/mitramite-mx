@@ -1,5 +1,6 @@
 import { Search } from "lucide-react";
 import PaperPlanesBackground from "./PaperPlanesBackground";
+import logoImg from "@/assets/tramiton-logo-final.svg";
 
 const examples = [
   "INE",
@@ -15,14 +16,19 @@ interface HeroSectionProps {
 
 const HeroSection = ({ search, onSearchChange }: HeroSectionProps) => {
   return (
-    <section className="relative overflow-hidden bg-primary px-4 py-20 text-primary-foreground md:py-28">
+    <section className="relative overflow-hidden bg-gradient-brand px-4 py-20 text-primary-foreground md:py-28">
       <PaperPlanesBackground />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,hsl(160_94%_30%/0.15),transparent_60%)]" />
       <div className="container relative mx-auto max-w-3xl text-center">
+        <img
+          src={logoImg}
+          alt="Tramitón"
+          className="mx-auto mb-6 h-auto w-[240px] logo-hover md:w-[320px]"
+        />
         <h1 className="animate-fade-up text-3xl font-extrabold leading-tight tracking-tight md:text-5xl">
           Deja de googlear trámites.
           <br />
-          <span className="text-secondary">Te llevamos de la mano.</span>
+          <span className="text-[hsl(160_94%_30%)]">Te llevamos de la mano.</span>
         </h1>
         <p className="mx-auto mt-4 max-w-lg animate-fade-up text-base text-primary-foreground/70 opacity-0 [animation-delay:150ms] md:text-lg">
           Encuentra guías paso a paso para cualquier trámite en México, sin complicaciones.

@@ -1,15 +1,15 @@
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
-import logoImg from "@/assets/logo-mitramite.png";
+import logoImg from "@/assets/tramiton-logo-final.svg";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
       <div className="container flex h-16 items-center justify-between">
-        <a href="/" className="flex items-center">
-          <img src={logoImg} alt="MiTrámite" className="h-[240px] w-auto" />
+        <a href="/" className="flex items-center logo-hover">
+          <img src={logoImg} alt="Tramitón" className="h-auto w-[160px] md:w-[220px]" />
         </a>
 
         <nav className="hidden items-center gap-6 text-sm font-medium text-muted-foreground md:flex">
