@@ -9,7 +9,7 @@ const Header = () => {
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-md">
       <div className="container flex h-16 items-center justify-between">
         <a href="/" className="flex items-center">
-          <img src={logoImg} alt="MiTrámite" className="h-10 w-auto" />
+          <img src={logoImg} alt="MiTrámite" className="h-20 w-auto" />
         </a>
 
         <nav className="hidden items-center gap-6 text-sm font-medium text-muted-foreground md:flex">
