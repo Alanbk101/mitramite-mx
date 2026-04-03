@@ -1,5 +1,6 @@
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import logoImg from "@/assets/logo-mitramite.png";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
@@ -7,9 +8,8 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-md">
       <div className="container flex h-16 items-center justify-between">
-        <a href="/" className="flex items-center gap-2 text-xl font-bold text-primary">
-          <span>🇲🇽</span>
-          <span>MiTrámite</span>
+        <a href="/" className="flex items-center">
+          <img src={logoImg} alt="MiTrámite" className="h-10 w-auto" />
         </a>
 
         <nav className="hidden items-center gap-6 text-sm font-medium text-muted-foreground md:flex">
