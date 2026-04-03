@@ -1,4 +1,5 @@
 import { Search } from "lucide-react";
+import PaperPlanesBackground from "./PaperPlanesBackground";
 
 const examples = [
   "INE",
