@@ -1,4 +1,5 @@
 import { Search } from "lucide-react";
+import PaperPlanesBackground from "./PaperPlanesBackground";
 
 const examples = [
   "INE",
@@ -15,6 +16,7 @@ interface HeroSectionProps {
 const HeroSection = ({ search, onSearchChange }: HeroSectionProps) => {
   return (
     <section className="relative overflow-hidden bg-primary px-4 py-20 text-primary-foreground md:py-28">
+      <PaperPlanesBackground />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,hsl(160_94%_30%/0.15),transparent_60%)]" />
       <div className="container relative mx-auto max-w-3xl text-center">
         <h1 className="animate-fade-up text-3xl font-extrabold leading-tight tracking-tight md:text-5xl">
