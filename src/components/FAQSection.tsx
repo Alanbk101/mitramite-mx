@@ -31,8 +31,10 @@ const faqs = [
 ];
 
 const FAQSection = () => {
+  const { ref, isVisible } = useScrollReveal();
+
   return (
-    <section id="faq" className="py-16 md:py-24">
+    <section id="faq" ref={ref} className={`py-16 md:py-24 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
       <div className="container max-w-3xl">
         <h2 className="text-center text-2xl font-bold text-foreground md:text-3xl">
           Preguntas frecuentes
