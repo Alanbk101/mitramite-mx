@@ -1,13 +1,18 @@
 import { Search } from "lucide-react";
 
 const examples = [
-  "Sacar mi INE por primera vez",
-  "Renovar pasaporte mexicano",
-  "Darme de alta en el SAT",
-  "Obtener mi CURP en línea",
+  "INE",
+  "Pasaporte",
+  "SAT",
+  "CURP",
 ];
 
-const HeroSection = () => {
+interface HeroSectionProps {
+  search: string;
+  onSearchChange: (value: string) => void;
+}
+
+const HeroSection = ({ search, onSearchChange }: HeroSectionProps) => {
   return (
     <section className="relative overflow-hidden bg-primary px-4 py-20 text-primary-foreground md:py-28">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,hsl(160_94%_30%/0.15),transparent_60%)]" />
@@ -26,23 +31,31 @@ const HeroSection = () => {
             <Search className="ml-3 shrink-0 text-muted-foreground" size={20} />
             <input
               type="text"
+              value={search}
+              onChange={(e) => onSearchChange(e.target.value)}
               placeholder="¿Qué trámite necesitas hacer?"
               className="w-full bg-transparent py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none md:text-base"
             />
-            <button className="shrink-0 rounded-lg bg-secondary px-5 py-3 text-sm font-semibold text-secondary-foreground transition-colors hover:bg-secondary/90">
-              Buscar
-            </button>
+            {search && (
+              <button
+                onClick={() => onSearchChange("")}
+                className="shrink-0 rounded-lg px-3 py-3 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Limpiar
+              </button>
+            )}
           </div>
         </div>
 
         <div className="mt-6 flex animate-fade-up flex-wrap justify-center gap-2 opacity-0 [animation-delay:450ms]">
           {examples.map((ex) => (
-            <span
+            <button
               key={ex}
+              onClick={() => onSearchChange(ex)}
               className="cursor-pointer rounded-full border border-primary-foreground/20 px-3 py-1 text-xs text-primary-foreground/70 transition-colors hover:bg-primary-foreground/10"
             >
               {ex}
-            </span>
+            </button>
           ))}
         </div>
       </div>
