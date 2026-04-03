@@ -37,10 +37,10 @@ const TramitesGrid = ({ search }: TramitesGridProps) => {
               <Link
                 to={`/tramite/${slug}`}
                 key={slug}
-                className="hover-lift group cursor-pointer rounded-xl border border-border bg-card p-5 text-center no-underline"
+                className="hover-lift group cursor-pointer rounded-xl border border-border bg-card p-5 text-center no-underline shadow-[var(--shadow-card)] hover:border-l-[3px] hover:border-l-primary"
                 style={{ animationDelay: `${i * 80}ms` }}
               >
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors group-hover:bg-secondary group-hover:text-secondary-foreground">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors group-hover:bg-gradient-brand group-hover:text-white">
                   <Icon size={24} />
                 </div>
                 <h3 className="mt-3 text-sm font-semibold text-foreground md:text-base">{title}</h3>
