@@ -1,4 +1,5 @@
 import { Search, ListChecks, ArrowRight } from "lucide-react";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const steps = [
   {
