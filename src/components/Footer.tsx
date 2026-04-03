@@ -3,7 +3,7 @@ import logoImg from "@/assets/tramiton-logo-final.svg";
 const Footer = () => (
   <footer id="contacto" className="border-t border-border bg-[hsl(222_47%_11%)] py-8">
     <div className="container flex flex-col items-center gap-4 text-center text-sm">
-      <img src={logoImg} alt="Tramitón" className="h-auto w-[180px] logo-hover brightness-0 invert" />
+      <img src={logoImg} alt="Tramitón" className="h-auto w-[180px] logo-hover" />
       <p className="text-[hsl(215_20%_65%)]">
         Hecho con ❤️ en México para el <span className="font-semibold text-white">Nodi Hackathon</span>
       </p>
