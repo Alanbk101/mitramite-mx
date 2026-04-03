@@ -83,6 +83,17 @@ export default {
           "0%": { opacity: "0" },
           "100%": { opacity: "1" },
         },
+        "fly-across": {
+          "0%": {
+            transform: "translateX(0) translateY(0) rotate(var(--tw-rotate, 0deg))",
+          },
+          "50%": {
+            transform: "translateX(60vw) translateY(calc(-1 * var(--y-drift, 30px))) rotate(var(--tw-rotate, 0deg))",
+          },
+          "100%": {
+            transform: "translateX(130vw) translateY(var(--y-drift, 30px)) rotate(var(--tw-rotate, 0deg))",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
