@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { tramites } from "@/data/tramites";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 interface TramitesGridProps {
   search: string;
@@ -16,8 +17,10 @@ const TramitesGrid = ({ search }: TramitesGridProps) => {
       )
     : tramites;
 
+  const { ref, isVisible } = useScrollReveal();
+
   return (
-    <section id="tramites" className="py-16 md:py-24">
+    <section id="tramites" ref={ref} className={`py-16 md:py-24 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
       <div className="container">
         <h2 className="text-center text-2xl font-bold text-foreground md:text-3xl">
           {query ? `Resultados para "${search}"` : "Trámites más populares"}

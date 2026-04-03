@@ -1,4 +1,5 @@
 import { Search, ListChecks, ArrowRight } from "lucide-react";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const steps = [
   {
@@ -19,8 +20,10 @@ const steps = [
 ];
 
 const HowItWorks = () => {
+  const { ref, isVisible } = useScrollReveal();
+
   return (
-    <section id="como-funciona" className="bg-muted py-16 md:py-24">
+    <section id="como-funciona" ref={ref} className={`bg-muted py-16 md:py-24 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
       <div className="container">
         <h2 className="text-center text-2xl font-bold text-foreground md:text-3xl">
           ¿Cómo funciona?
