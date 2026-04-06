@@ -53,7 +53,12 @@ const TramiteDetail = () => {
                 <Icon size={28} />
               </div>
               <div>
-                <h1 className="text-2xl font-extrabold md:text-3xl">{tramite.title}</h1>
+                <div className="flex items-center gap-3">
+                  <h1 className="text-2xl font-extrabold md:text-3xl">{tramite.title}</h1>
+                  <span className="rounded-full bg-secondary px-3 py-0.5 text-xs font-semibold text-secondary-foreground">
+                    {tramite.actualizado}
+                  </span>
+                </div>
                 <p className="mt-2 text-sm text-primary-foreground/70 md:text-base">
                   {tramite.fullDescription}
                 </p>
