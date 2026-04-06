@@ -8,6 +8,7 @@ interface Message {
   role: "user" | "bot";
   text: string;
   isError?: boolean;
+  canRetry?: boolean;
 }
 
 const WELCOME_MESSAGE: Message = {
@@ -23,6 +24,25 @@ const SUGGESTION_CHIPS = [
   "🆔 Descargar CURP",
   "📋 Declaración anual",
 ];
+
+const getChatErrorMessage = (error: unknown) => {
+  const message = error instanceof Error ? error.message : "";
+
+  if (/(RESOURCE_EXHAUSTED|quota|429)/i.test(message)) {
+    return "⚠️ La API key de Gemini alcanzó su límite de uso o no tiene cuota disponible. Actualízala en los secretos del proyecto o activa facturación en Google AI Studio / Google Cloud.";
+  }
+
+  if (/(api key|configurada|secretos del proyecto)/i.test(message)) {
+    return "🔑 La API key de Gemini no está configurada correctamente en el proyecto.";
+  }
+
+  return "😅 Ups, tuve un problema técnico. ¿Puedes intentar de nuevo?";
+};
+
+const isRetryableError = (error: unknown) => {
+  const message = error instanceof Error ? error.message : "";
+  return !/(RESOURCE_EXHAUSTED|quota|429|api key|configurada|secretos del proyecto)/i.test(message);
+};
 
 const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
@@ -54,14 +74,18 @@ const Chat = () => {
     try {
       const response = await callGemini(text.trim(), chatHistory);
       setMessages((prev) => [...prev, { role: "bot", text: response }]);
-    } catch {
-      setRetryMessage(text.trim());
+    } catch (error) {
+      const errorText = getChatErrorMessage(error);
+      const canRetry = isRetryableError(error);
+
+      setRetryMessage(canRetry ? text.trim() : null);
       setMessages((prev) => [
         ...prev,
         {
           role: "bot",
-          text: "😅 Ups, tuve un problema técnico. ¿Puedes intentar de nuevo?",
+          text: errorText,
           isError: true,
+          canRetry,
         },
       ]);
     } finally {
@@ -85,7 +109,6 @@ const Chat = () => {
 
   return (
     <div className="flex h-screen flex-col bg-[#F8FAFC]">
-      {/* Header */}
       <header className="shrink-0 border-b border-[#E2E8F0] bg-white/80 backdrop-blur-md px-4 py-4">
         <div className="mx-auto flex max-w-[800px] items-center gap-3">
           <Link
@@ -102,7 +125,6 @@ const Chat = () => {
         </div>
       </header>
 
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4">
         <div className="mx-auto max-w-[800px] space-y-4">
           {messages.map((msg, i) => (
@@ -122,7 +144,7 @@ const Chat = () => {
                 {msg.role === "bot" ? (
                   <div className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0.5 prose-strong:text-[#1E293B]">
                     <ReactMarkdown>{msg.text}</ReactMarkdown>
-                    {msg.isError && (
+                    {msg.isError && msg.canRetry !== false && (
                       <button
                         onClick={handleRetry}
                         className="mt-2 rounded-full border border-[#0EA5E9] px-4 py-1.5 text-sm font-medium text-[#0EA5E9] hover:bg-[#0EA5E9] hover:text-white transition-colors"
@@ -157,7 +179,6 @@ const Chat = () => {
         </div>
       </div>
 
-      {/* Chips + Input */}
       <div className="shrink-0 border-t border-[#E2E8F0] bg-white">
         {showChips && (
           <div className="mx-auto max-w-[800px] overflow-x-auto px-4 pt-3 pb-1">
