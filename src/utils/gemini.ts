@@ -59,8 +59,13 @@ BASE DE DATOS DE TRÁMITES:
     parts: [{ text: userMessage }]
   });
 
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("VITE_GEMINI_API_KEY no está configurada");
+  }
+
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -76,7 +81,12 @@ BASE DE DATOS DE TRÁMITES:
   );
 
   const data = await response.json();
+  console.log("Gemini response:", JSON.stringify(data));
   
+  if (!response.ok) {
+    throw new Error(data.error?.message || `Error ${response.status} de Gemini`);
+  }
+
   if (!data.candidates || !data.candidates[0]) {
     throw new Error("No response from Gemini");
   }
