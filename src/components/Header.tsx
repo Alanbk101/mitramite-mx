@@ -16,6 +16,7 @@ const Header = () => {
           <a href="#tramites" className="transition-colors hover:text-primary">Trámites</a>
           <a href="#como-funciona" className="transition-colors hover:text-primary">¿Cómo funciona?</a>
           <a href="#contacto" className="transition-colors hover:text-primary">Contacto</a>
+          <a href="/chat" className="transition-colors hover:text-primary">💬 Chat IA</a>
         </nav>
 
         <button
@@ -32,6 +33,7 @@ const Header = () => {
           <a href="#tramites" className="text-sm font-medium text-muted-foreground" onClick={() => setOpen(false)}>Trámites</a>
           <a href="#como-funciona" className="text-sm font-medium text-muted-foreground" onClick={() => setOpen(false)}>¿Cómo funciona?</a>
           <a href="#contacto" className="text-sm font-medium text-muted-foreground" onClick={() => setOpen(false)}>Contacto</a>
+          <a href="/chat" className="text-sm font-medium text-muted-foreground" onClick={() => setOpen(false)}>💬 Chat IA</a>
         </nav>
       )}
     </header>
