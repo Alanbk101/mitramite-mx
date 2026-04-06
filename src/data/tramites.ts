@@ -84,6 +84,7 @@ export const tramites: Tramite[] = [
     title: "SAT / RFC",
     desc: "Alta, constancia y declaraciones fiscales.",
     keywords: ["sat", "rfc", "fiscal", "impuestos", "declaración", "alta"],
+    popular: true,
     fullDescription:
       "El Registro Federal de Contribuyentes (RFC) es indispensable para trabajar formalmente, facturar y cumplir con tus obligaciones fiscales en México. Desde 2022, es obligatorio para mayores de 18 años.",
     costo: "Gratuito",
