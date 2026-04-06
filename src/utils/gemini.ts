@@ -59,10 +59,7 @@ BASE DE DATOS DE TRÁMITES:
     parts: [{ text: userMessage }]
   });
 
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error("VITE_GEMINI_API_KEY no está configurada");
-  }
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "AIzaSyCxMXn6h8np9JBKQsPIa3cU9f67Zd7ciag";
 
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
