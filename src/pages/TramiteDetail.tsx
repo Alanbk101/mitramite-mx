@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { tramites } from "@/data/tramites";
 import Header from "@/components/Header";
@@ -6,15 +7,28 @@ import {
   ArrowLeft,
   Clock,
   DollarSign,
-  CalendarCheck,
+  Monitor,
+  BarChart3,
   ExternalLink,
   CheckCircle2,
   Lightbulb,
+  AlertTriangle,
+  Download,
+  Search,
+  Square,
+  CheckSquare,
 } from "lucide-react";
+
+const difficultyColor: Record<string, string> = {
+  "Fácil": "text-green-600 bg-green-50 border-green-200",
+  "Medio": "text-amber-600 bg-amber-50 border-amber-200",
+  "Difícil": "text-red-600 bg-red-50 border-red-200",
+};
 
 const TramiteDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const tramite = tramites.find((t) => t.slug === slug);
+  const [checked, setChecked] = useState<boolean[]>([]);
 
   if (!tramite) {
     return (
@@ -32,7 +46,43 @@ const TramiteDetail = () => {
     );
   }
 
+  // Initialize checked state lazily
+  if (checked.length !== tramite.requisitos.length) {
+    setChecked(new Array(tramite.requisitos.length).fill(false));
+  }
+
+  const toggleCheck = (index: number) => {
+    setChecked((prev) => prev.map((v, i) => (i === index ? !v : v)));
+  };
+
+  const handleDownload = () => {
+    const lines = [
+      `Checklist: ${tramite.title}`,
+      `Actualizado: ${tramite.actualizado}`,
+      "",
+      "DOCUMENTOS NECESARIOS:",
+      ...tramite.requisitos.map((r, i) => `${checked[i] ? "✅" : "⬜"} ${r}`),
+      "",
+      "PASOS:",
+      ...tramite.pasos.map((p, i) => `${i + 1}. ${p.title}: ${p.description}`),
+      "",
+      "TIPS:",
+      ...tramite.tips.map((t) => `💡 ${t}`),
+      "",
+      `Más info: ${tramite.url}`,
+      `Generado en Tramitón — tramiton-mx.lovable.app`,
+    ];
+    const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `checklist-${tramite.slug}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const Icon = tramite.icon;
+  const checkedCount = checked.filter(Boolean).length;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -53,7 +103,7 @@ const TramiteDetail = () => {
                 <Icon size={28} />
               </div>
               <div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <h1 className="text-2xl font-extrabold md:text-3xl">{tramite.title}</h1>
                   <span className="rounded-full bg-secondary px-3 py-0.5 text-xs font-semibold text-secondary-foreground">
                     {tramite.actualizado}
@@ -65,12 +115,13 @@ const TramiteDetail = () => {
               </div>
             </div>
 
-            {/* Quick info */}
-            <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
+            {/* Quick info cards */}
+            <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
               {[
                 { icon: DollarSign, label: "Costo", value: tramite.costo },
-                { icon: Clock, label: "Tiempo", value: tramite.tiempo },
-                { icon: CalendarCheck, label: "Vigencia", value: tramite.vigencia },
+                { icon: Clock, label: "Tiempo estimado", value: tramite.tiempo },
+                { icon: Monitor, label: "Modalidad", value: tramite.modalidad },
+                { icon: BarChart3, label: "Dificultad", value: tramite.dificultad },
               ].map(({ icon: QIcon, label, value }) => (
                 <div
                   key={label}
@@ -87,29 +138,59 @@ const TramiteDetail = () => {
           </div>
         </section>
 
-        {/* Requisitos */}
+        {/* Documentos necesarios - Interactive checklist */}
         <section className="py-12 md:py-16">
           <div className="container max-w-3xl">
-            <h2 className="text-xl font-bold text-foreground md:text-2xl">📋 Requisitos</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold text-foreground md:text-2xl">📋 Documentos necesarios</h2>
+              <span className="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">
+                {checkedCount}/{tramite.requisitos.length} listos
+              </span>
+            </div>
+            {/* Progress bar */}
+            <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-muted">
+              <div
+                className="h-full rounded-full bg-secondary transition-all duration-500"
+                style={{ width: `${tramite.requisitos.length ? (checkedCount / tramite.requisitos.length) * 100 : 0}%` }}
+              />
+            </div>
             <ul className="mt-6 space-y-3">
               {tramite.requisitos.map((req, i) => (
-                <li key={i} className="flex items-start gap-3 rounded-lg border border-border bg-card p-4">
-                  <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-secondary" />
-                  <span className="text-sm text-foreground">{req}</span>
+                <li
+                  key={i}
+                  onClick={() => toggleCheck(i)}
+                  className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-all ${
+                    checked[i]
+                      ? "border-secondary/30 bg-secondary/5"
+                      : "border-border bg-card hover:border-secondary/40"
+                  }`}
+                >
+                  {checked[i] ? (
+                    <CheckSquare size={20} className="mt-0.5 shrink-0 text-secondary" />
+                  ) : (
+                    <Square size={20} className="mt-0.5 shrink-0 text-muted-foreground" />
+                  )}
+                  <span className={`text-sm ${checked[i] ? "text-muted-foreground line-through" : "text-foreground"}`}>
+                    {req}
+                  </span>
                 </li>
               ))}
             </ul>
           </div>
         </section>
 
-        {/* Pasos */}
+        {/* Paso a paso - Timeline */}
         <section className="bg-muted py-12 md:py-16">
           <div className="container max-w-3xl">
             <h2 className="text-xl font-bold text-foreground md:text-2xl">🚶 Paso a paso</h2>
-            <div className="mt-6 space-y-4">
+            <div className="mt-8 space-y-0">
               {tramite.pasos.map((paso, i) => (
-                <div key={i} className="flex gap-4">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                <div key={i} className="relative flex gap-4 pb-8 last:pb-0">
+                  {/* Timeline line */}
+                  {i < tramite.pasos.length - 1 && (
+                    <div className="absolute left-[15px] top-10 h-[calc(100%-24px)] w-0.5 bg-border" />
+                  )}
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground z-10">
                     {i + 1}
                   </div>
                   <div className="rounded-lg border border-border bg-card p-4 flex-1">
@@ -122,28 +203,48 @@ const TramiteDetail = () => {
           </div>
         </section>
 
-        {/* Tips */}
+        {/* Tips y advertencias */}
         <section className="py-12 md:py-16">
           <div className="container max-w-3xl">
-            <h2 className="text-xl font-bold text-foreground md:text-2xl">💡 Tips</h2>
-            <ul className="mt-6 space-y-3">
+            <h2 className="text-xl font-bold text-foreground md:text-2xl">💡 Tips y advertencias</h2>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
               {tramite.tips.map((tip, i) => (
-                <li key={i} className="flex items-start gap-3">
-                  <Lightbulb size={16} className="mt-0.5 shrink-0 text-amber-500" />
-                  <span className="text-sm text-muted-foreground">{tip}</span>
-                </li>
+                <div
+                  key={i}
+                  className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4"
+                >
+                  <Lightbulb size={18} className="mt-0.5 shrink-0 text-amber-600" />
+                  <span className="text-sm text-amber-900">{tip}</span>
+                </div>
               ))}
-            </ul>
+            </div>
 
-            <a
-              href={tramite.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-8 inline-flex items-center gap-2 rounded-lg bg-secondary px-5 py-3 text-sm font-semibold text-secondary-foreground transition-colors hover:bg-secondary/90"
-            >
-              Ir al sitio oficial
-              <ExternalLink size={16} />
-            </a>
+            {/* Action buttons */}
+            <div className="mt-10 flex flex-wrap gap-3">
+              <button
+                onClick={handleDownload}
+                className="inline-flex items-center gap-2 rounded-lg bg-secondary px-5 py-3 text-sm font-semibold text-secondary-foreground transition-colors hover:bg-secondary/90"
+              >
+                <Download size={16} />
+                Descargar checklist
+              </button>
+              <Link
+                to="/"
+                className="inline-flex items-center gap-2 rounded-lg border border-secondary px-5 py-3 text-sm font-semibold text-secondary transition-colors hover:bg-secondary hover:text-secondary-foreground"
+              >
+                <Search size={16} />
+                Consultar otro trámite
+              </Link>
+              <a
+                href={tramite.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+              >
+                Ir al sitio oficial
+                <ExternalLink size={16} />
+              </a>
+            </div>
           </div>
         </section>
       </main>
