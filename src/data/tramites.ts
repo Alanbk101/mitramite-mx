@@ -53,6 +53,8 @@ export const tramites: Tramite[] = [
     costo: "Gratuito",
     tiempo: "2-4 semanas",
     vigencia: "10 años",
+    modalidad: "Presencial",
+    dificultad: "Fácil",
     requisitos: [
       "Acta de nacimiento original o certificada",
       "Comprobante de domicilio reciente (no mayor a 3 meses)",
@@ -85,6 +87,8 @@ export const tramites: Tramite[] = [
     costo: "Gratuito",
     tiempo: "Mismo día (en línea) o 1-2 horas (presencial)",
     vigencia: "Permanente",
+    modalidad: "En línea y presencial",
+    dificultad: "Medio",
     requisitos: [
       "CURP",
       "Acta de nacimiento",
@@ -118,6 +122,8 @@ export const tramites: Tramite[] = [
     costo: "Gratuito",
     tiempo: "Inmediato (en línea)",
     vigencia: "Permanente",
+    modalidad: "En línea",
+    dificultad: "Fácil",
     requisitos: [
       "Nombre completo",
       "Fecha de nacimiento",
@@ -149,6 +155,8 @@ export const tramites: Tramite[] = [
     costo: "$1,795 - $4,280 MXN (según vigencia 2026)",
     tiempo: "3-6 semanas",
     vigencia: "1, 3, 6 o 10 años",
+    modalidad: "Presencial",
+    dificultad: "Medio",
     requisitos: [
       "Acta de nacimiento certificada (copia reciente)",
       "Identificación oficial vigente (INE)",
@@ -183,6 +191,8 @@ export const tramites: Tramite[] = [
     costo: "Gratuito",
     tiempo: "Mismo día (con cita)",
     vigencia: "4 años (renovable)",
+    modalidad: "Presencial",
+    dificultad: "Medio",
     requisitos: [
       "Identificación oficial vigente (INE)",
       "CURP",
@@ -216,6 +226,8 @@ export const tramites: Tramite[] = [
     costo: "$500 - $2,000 MXN (varía por estado y vigencia, 2026)",
     tiempo: "Mismo día o 1-2 semanas",
     vigencia: "1 a 5 años según el estado (algunos ofrecen permanente)",
+    modalidad: "Presencial",
+    dificultad: "Medio",
     requisitos: [
       "Identificación oficial vigente (INE)",
       "CURP",
@@ -250,6 +262,8 @@ export const tramites: Tramite[] = [
     costo: "$57 - $243 MXN según el estado (en línea, 2026)",
     tiempo: "Inmediato (descarga digital)",
     vigencia: "Sin vigencia (se recomienda reciente para trámites)",
+    modalidad: "En línea",
+    dificultad: "Fácil",
     requisitos: [
       "CURP de la persona registrada",
       "Cuenta Llave MX (obligatoria desde 2026 para trámite en línea)",
@@ -282,6 +296,8 @@ export const tramites: Tramite[] = [
     costo: "$435 USD total ($185 USD solicitud + $250 USD Visa Integrity Fee si es aprobada)",
     tiempo: "2-8 semanas (depende de disponibilidad de citas)",
     vigencia: "Hasta 10 años (entrada múltiple)",
+    modalidad: "En línea y presencial",
+    dificultad: "Difícil",
     requisitos: [
       "Pasaporte mexicano vigente (mínimo 6 meses de vigencia)",
       "Formulario DS-160 completado en línea",
@@ -318,6 +334,8 @@ export const tramites: Tramite[] = [
     costo: "Gratuito",
     tiempo: "5 minutos (en línea)",
     vigencia: "Sin vigencia fija (se recomienda reciente)",
+    modalidad: "En línea",
+    dificultad: "Fácil",
     requisitos: [
       "RFC con homoclave",
       "Contraseña del SAT o e.firma",
@@ -347,6 +365,8 @@ export const tramites: Tramite[] = [
     costo: "Gratuito",
     tiempo: "30-60 minutos",
     vigencia: "Anual — Fecha límite: 30 de abril 2026 (personas físicas) / 31 de marzo 2026 (personas morales)",
+    modalidad: "En línea",
+    dificultad: "Medio",
     requisitos: [
       "RFC con homoclave",
       "e.firma o contraseña del SAT",
@@ -380,6 +400,8 @@ export const tramites: Tramite[] = [
     costo: "$20,538 MXN anuales en régimen voluntario (2026)",
     tiempo: "1-2 días (en línea) o mismo día (presencial)",
     vigencia: "Mientras se mantenga el pago anual",
+    modalidad: "En línea y presencial",
+    dificultad: "Medio",
     requisitos: [
       "RFC con homoclave",
       "e.firma vigente",
@@ -413,6 +435,8 @@ export const tramites: Tramite[] = [
     costo: "Gratuito ante SAT (notario tiene costo aparte, $8,000-$25,000 MXN aprox.)",
     tiempo: "1-3 días hábiles (SAT) + tiempo de notaría",
     vigencia: "Permanente",
+    modalidad: "En línea y presencial",
+    dificultad: "Difícil",
     requisitos: [
       "Acta constitutiva notariada",
       "RFC de todos los socios",
@@ -446,6 +470,8 @@ export const tramites: Tramite[] = [
     costo: "Gratuito (federal) / $200-$500 MXN (estatal, varía por entidad)",
     tiempo: "24-72 horas (en línea)",
     vigencia: "3-6 meses (según la institución que la solicite)",
+    modalidad: "En línea",
+    dificultad: "Fácil",
     requisitos: [
       "Identificación oficial vigente (INE)",
       "CURP",
@@ -477,6 +503,8 @@ export const tramites: Tramite[] = [
     costo: "Gratuito",
     tiempo: "Mismo día (presencial)",
     vigencia: "Mientras se cumplan los requisitos de elegibilidad",
+    modalidad: "Presencial",
+    dificultad: "Fácil",
     requisitos: [
       "CURP",
       "Comprobante de domicilio reciente (no mayor a 3 meses)",
