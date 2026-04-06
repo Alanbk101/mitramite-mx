@@ -1,8 +1,25 @@
+import { z } from "npm:zod@3.25.76";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
+
+const RequestSchema = z.object({
+  userMessage: z.string().trim().min(1).max(2000),
+  chatHistory: z
+    .array(
+      z.object({
+        role: z.enum(["user", "model", "assistant", "bot"]),
+        text: z.string().trim().min(1).max(4000),
+      })
+    )
+    .max(20)
+    .default([]),
+});
+
+type ChatHistoryMessage = z.infer<typeof RequestSchema>["chatHistory"][number];
 
 const systemPrompt = `Eres MiTramite Assistant, un asistente virtual experto en trámites gubernamentales de México. Tu misión es ayudar a cualquier persona a completar sus trámites de forma rápida, clara y sin estrés.
 
@@ -38,81 +55,206 @@ BASE DE DATOS DE TRÁMITES:
 - ACTA NACIMIENTO: CURP o datos personales. $99-$150 MXN. gob.mx/ActaNacimiento. 5 min en línea.
 - VISA AMERICANA B1/B2: pasaporte vigente + DS-160 + comprobante pago + carta empleo + estados de cuenta. $185 USD. Embajada EE.UU. ustraveldocs.com.`;
 
+const reminderPrompt = `${systemPrompt}\n\nRecuerda: eres el asistente de MiTramite. Responde siempre en español mexicano.`;
+
+const buildGoogleContents = (userMessage: string, chatHistory: ChatHistoryMessage[]) => [
+  {
+    role: "user",
+    parts: [{ text: reminderPrompt }],
+  },
+  {
+    role: "model",
+    parts: [{ text: "¡Entendido! Soy el asistente de MiTramite, tu guía de trámites en México. ¿En qué te puedo ayudar?" }],
+  },
+  ...chatHistory.map((msg) => ({
+    role: msg.role === "user" ? "user" : "model",
+    parts: [{ text: msg.text }],
+  })),
+  {
+    role: "user",
+    parts: [{ text: userMessage }],
+  },
+];
+
+const buildGatewayMessages = (userMessage: string, chatHistory: ChatHistoryMessage[]) => [
+  { role: "system", content: reminderPrompt },
+  ...chatHistory.map((msg) => ({
+    role: msg.role === "user" ? "user" : "assistant",
+    content: msg.text,
+  })),
+  { role: "user", content: userMessage },
+];
+
+const extractGoogleMessage = (data: any) =>
+  data?.candidates?.[0]?.content?.parts
+    ?.map((part: { text?: string }) => part?.text ?? "")
+    .join("\n")
+    .trim();
+
+const extractGatewayMessage = (data: any) => {
+  const content = data?.choices?.[0]?.message?.content;
+
+  if (typeof content === "string") {
+    return content.trim();
+  }
+
+  if (Array.isArray(content)) {
+    return content
+      .map((part) => (typeof part === "string" ? part : part?.text ?? ""))
+      .join("")
+      .trim();
+  }
+
+  return "";
+};
+
+const createErrorResponse = (error: string, status: number) =>
+  Response.json({ error }, { status, headers: corsHeaders });
+
+const callGoogleGemini = async (userMessage: string, chatHistory: ChatHistoryMessage[]) => {
+  const apiKey = Deno.env.get("VITE_GEMINI_API_KEY");
+
+  if (!apiKey) {
+    return {
+      ok: false as const,
+      status: 500,
+      error: "La API key de Gemini no está configurada en los secretos del proyecto.",
+    };
+  }
+
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: buildGoogleContents(userMessage, chatHistory),
+        generationConfig: {
+          temperature: 0.7,
+          topP: 0.9,
+          maxOutputTokens: 1024,
+        },
+      }),
+    }
+  );
+
+  const data = await response.json();
+  console.log("Gemini response:", JSON.stringify(data));
+
+  if (!response.ok) {
+    return {
+      ok: false as const,
+      status: response.status,
+      error: data?.error?.message || `Error ${response.status} de Gemini`,
+    };
+  }
+
+  const message = extractGoogleMessage(data);
+
+  if (!message) {
+    return {
+      ok: false as const,
+      status: 502,
+      error: "No response from Gemini",
+    };
+  }
+
+  return {
+    ok: true as const,
+    message,
+  };
+};
+
+const callLovableGateway = async (userMessage: string, chatHistory: ChatHistoryMessage[]) => {
+  const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
+
+  if (!lovableApiKey) {
+    return {
+      ok: false as const,
+      status: 500,
+      error: "LOVABLE_API_KEY no está configurada en el proyecto.",
+    };
+  }
+
+  const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${lovableApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "google/gemini-2.5-flash-lite",
+      messages: buildGatewayMessages(userMessage, chatHistory),
+      temperature: 0.7,
+    }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    return {
+      ok: false as const,
+      status: response.status,
+      error:
+        response.status === 429
+          ? "El servicio de IA está recibiendo demasiadas solicitudes. Intenta de nuevo en unos segundos."
+          : response.status === 402
+            ? "El servicio de IA no tiene créditos disponibles en este momento."
+            : data?.error?.message || data?.error || `Error ${response.status} del servicio de IA`,
+    };
+  }
+
+  const message = extractGatewayMessage(data);
+
+  if (!message) {
+    return {
+      ok: false as const,
+      status: 502,
+      error: "No response from AI gateway",
+    };
+  }
+
+  return {
+    ok: true as const,
+    message,
+  };
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   if (req.method !== "POST") {
-    return Response.json({ error: "Method not allowed" }, { status: 405, headers: corsHeaders });
+    return createErrorResponse("Method not allowed", 405);
   }
 
   try {
-    const apiKey = Deno.env.get("VITE_GEMINI_API_KEY");
+    const parsedBody = RequestSchema.safeParse(await req.json());
 
-    if (!apiKey) {
-      return Response.json(
-        { error: "La API key de Gemini no está configurada en los secretos del proyecto." },
-        { status: 500, headers: corsHeaders }
-      );
+    if (!parsedBody.success) {
+      return createErrorResponse("Solicitud inválida para el chat.", 400);
     }
 
-    const { userMessage, chatHistory } = await req.json();
+    const { userMessage, chatHistory } = parsedBody.data;
 
-    const contents = [
-      {
-        role: "user",
-        parts: [{ text: `${systemPrompt}\n\nRecuerda: eres el asistente de MiTramite. Responde siempre en español mexicano.` }],
-      },
-      {
-        role: "model",
-        parts: [{ text: "¡Entendido! Soy el asistente de MiTramite, tu guía de trámites en México. ¿En qué te puedo ayudar?" }],
-      },
-      ...((chatHistory ?? []) as Array<{ role: string; text: string }>).map((msg) => ({
-        role: msg.role === "user" ? "user" : "model",
-        parts: [{ text: msg.text }],
-      })),
-      {
-        role: "user",
-        parts: [{ text: userMessage }],
-      },
-    ];
+    const googleResult = await callGoogleGemini(userMessage, chatHistory);
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents,
-          generationConfig: {
-            temperature: 0.7,
-            topP: 0.9,
-            maxOutputTokens: 1024,
-          },
-        }),
-      }
-    );
-
-    const data = await response.json();
-    console.log("Gemini response:", JSON.stringify(data));
-
-    if (!response.ok) {
-      return Response.json(
-        { error: data?.error?.message || `Error ${response.status} de Gemini` },
-        { status: response.status, headers: corsHeaders }
-      );
+    if (googleResult.ok) {
+      return Response.json({ message: googleResult.message }, { headers: corsHeaders });
     }
 
-    const message = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    console.log("Falling back to Lovable AI after Gemini error:", googleResult.error);
 
-    if (!message) {
-      return Response.json({ error: "No response from Gemini" }, { status: 502, headers: corsHeaders });
+    const fallbackResult = await callLovableGateway(userMessage, chatHistory);
+
+    if (fallbackResult.ok) {
+      return Response.json({ message: fallbackResult.message }, { headers: corsHeaders });
     }
 
-    return Response.json({ message }, { headers: corsHeaders });
+    return createErrorResponse(fallbackResult.error, fallbackResult.status);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unexpected error";
-    return Response.json({ error: message }, { status: 500, headers: corsHeaders });
+    return createErrorResponse(message, 500);
   }
 });
