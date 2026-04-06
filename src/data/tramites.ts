@@ -49,6 +49,7 @@ export const tramites: Tramite[] = [
     title: "INE / Credencial",
     desc: "Obtén o renueva tu identificación oficial.",
     keywords: ["ine", "credencial", "identificación", "votar"],
+    popular: true,
     fullDescription:
       "La credencial para votar expedida por el INE es el documento de identificación oficial más utilizado en México. Sirve para votar, realizar trámites bancarios, gubernamentales y más.",
     costo: "Gratuito",
