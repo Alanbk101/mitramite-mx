@@ -38,6 +38,7 @@ export interface Tramite {
   tips: string[];
   url: string;
   actualizado: string;
+  popular?: boolean;
 }
 
 // Última revisión: abril 2026
