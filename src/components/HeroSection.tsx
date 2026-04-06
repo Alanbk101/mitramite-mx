@@ -23,7 +23,8 @@ const HeroSection = ({ search, onSearchChange }: HeroSectionProps) => {
         <img
           src={logoImg}
           alt="MiTramite"
-          className="mx-auto mb-6 h-auto w-[240px] logo-hover md:w-[320px]"
+          className="mx-auto mb-6 h-auto w-[240px] logo-hover drop-shadow-[0_0_12px_rgba(255,255,255,0.4)] brightness-110 md:w-[320px]"
+          style={{ filter: 'brightness(1.3) drop-shadow(0 0 8px rgba(255,255,255,0.3))' }}
         />
         <h1 className="animate-fade-up text-3xl font-extrabold leading-tight tracking-tight md:text-5xl">
           Deja de googlear trámites.
