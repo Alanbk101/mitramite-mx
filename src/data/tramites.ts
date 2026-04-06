@@ -35,8 +35,10 @@ export interface Tramite {
   pasos: TramiteStep[];
   tips: string[];
   url: string;
+  actualizado: string;
 }
 
+// Última revisión: abril 2026
 export const tramites: Tramite[] = [
   {
     slug: "ine",
