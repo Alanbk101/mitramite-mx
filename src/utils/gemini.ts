@@ -81,7 +81,12 @@ BASE DE DATOS DE TRÁMITES:
   );
 
   const data = await response.json();
+  console.log("Gemini response:", JSON.stringify(data));
   
+  if (!response.ok) {
+    throw new Error(data.error?.message || `Error ${response.status} de Gemini`);
+  }
+
   if (!data.candidates || !data.candidates[0]) {
     throw new Error("No response from Gemini");
   }
