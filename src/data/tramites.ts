@@ -120,6 +120,7 @@ export const tramites: Tramite[] = [
     title: "CURP",
     desc: "Consulta o imprime tu CURP en línea.",
     keywords: ["curp", "clave", "única", "registro", "población"],
+    popular: true,
     fullDescription:
       "La Clave Única de Registro de Población (CURP) es un código alfanumérico de 18 caracteres que identifica a cada persona en México. Es indispensable para casi cualquier trámite.",
     costo: "Gratuito",
