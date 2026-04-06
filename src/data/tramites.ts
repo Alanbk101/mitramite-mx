@@ -31,6 +31,8 @@ export interface Tramite {
   costo: string;
   tiempo: string;
   vigencia: string;
+  modalidad: "En línea" | "Presencial" | "En línea y presencial";
+  dificultad: "Fácil" | "Medio" | "Difícil";
   requisitos: string[];
   pasos: TramiteStep[];
   tips: string[];
