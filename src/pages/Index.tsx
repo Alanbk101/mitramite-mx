@@ -10,7 +10,7 @@ const Index = () => {
   const [search, setSearch] = useState("");
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col pb-16 md:pb-0">
       <Header />
       <main className="flex-1">
         <HeroSection search={search} onSearchChange={setSearch} />
