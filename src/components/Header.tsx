@@ -9,7 +9,7 @@ const Header = () => {
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
       <div className="container flex h-16 items-center justify-between">
         <a href="/" className="flex items-center logo-hover">
-          <img src={logoImg} alt="Tramitón" className="h-auto w-[160px] md:w-[220px]" />
+          <img src={logoImg} alt="MiTramite" className="h-auto w-[160px] md:w-[220px]" />
         </a>
 
         <nav className="hidden items-center gap-6 text-sm font-medium text-muted-foreground md:flex">

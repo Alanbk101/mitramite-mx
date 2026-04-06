@@ -22,7 +22,7 @@ const HeroSection = ({ search, onSearchChange }: HeroSectionProps) => {
       <div className="container relative mx-auto max-w-3xl text-center">
         <img
           src={logoImg}
-          alt="Tramitón"
+          alt="MiTramite"
           className="mx-auto mb-6 h-auto w-[240px] logo-hover md:w-[320px]"
         />
         <h1 className="animate-fade-up text-3xl font-extrabold leading-tight tracking-tight md:text-5xl">
