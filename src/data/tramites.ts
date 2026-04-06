@@ -38,6 +38,7 @@ export interface Tramite {
   tips: string[];
   url: string;
   actualizado: string;
+  popular?: boolean;
 }
 
 // Última revisión: abril 2026
@@ -48,6 +49,7 @@ export const tramites: Tramite[] = [
     title: "INE / Credencial",
     desc: "Obtén o renueva tu identificación oficial.",
     keywords: ["ine", "credencial", "identificación", "votar"],
+    popular: true,
     fullDescription:
       "La credencial para votar expedida por el INE es el documento de identificación oficial más utilizado en México. Sirve para votar, realizar trámites bancarios, gubernamentales y más.",
     costo: "Gratuito",
@@ -82,6 +84,7 @@ export const tramites: Tramite[] = [
     title: "SAT / RFC",
     desc: "Alta, constancia y declaraciones fiscales.",
     keywords: ["sat", "rfc", "fiscal", "impuestos", "declaración", "alta"],
+    popular: true,
     fullDescription:
       "El Registro Federal de Contribuyentes (RFC) es indispensable para trabajar formalmente, facturar y cumplir con tus obligaciones fiscales en México. Desde 2022, es obligatorio para mayores de 18 años.",
     costo: "Gratuito",
@@ -117,6 +120,7 @@ export const tramites: Tramite[] = [
     title: "CURP",
     desc: "Consulta o imprime tu CURP en línea.",
     keywords: ["curp", "clave", "única", "registro", "población"],
+    popular: true,
     fullDescription:
       "La Clave Única de Registro de Población (CURP) es un código alfanumérico de 18 caracteres que identifica a cada persona en México. Es indispensable para casi cualquier trámite.",
     costo: "Gratuito",

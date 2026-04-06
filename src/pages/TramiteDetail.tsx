@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { tramites } from "@/data/tramites";
 import Header from "@/components/Header";
@@ -10,13 +10,12 @@ import {
   Monitor,
   BarChart3,
   ExternalLink,
-  CheckCircle2,
   Lightbulb,
-  AlertTriangle,
   Download,
   Search,
   Square,
   CheckSquare,
+  Share2,
 } from "lucide-react";
 
 const difficultyColor: Record<string, string> = {
@@ -25,10 +24,36 @@ const difficultyColor: Record<string, string> = {
   "Difícil": "text-red-600 bg-red-50 border-red-200",
 };
 
+/** Load persisted checks from localStorage */
+function loadChecks(slug: string, length: number): boolean[] {
+  try {
+    const raw = localStorage.getItem(`checklist-${slug}`);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length === length) return parsed;
+    }
+  } catch {}
+  return new Array(length).fill(false);
+}
+
 const TramiteDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const tramite = tramites.find((t) => t.slug === slug);
+
   const [checked, setChecked] = useState<boolean[]>([]);
+
+  // Initialize & persist checks
+  useEffect(() => {
+    if (tramite) {
+      setChecked(loadChecks(tramite.slug, tramite.requisitos.length));
+    }
+  }, [tramite]);
+
+  useEffect(() => {
+    if (tramite && checked.length === tramite.requisitos.length) {
+      localStorage.setItem(`checklist-${tramite.slug}`, JSON.stringify(checked));
+    }
+  }, [checked, tramite]);
 
   if (!tramite) {
     return (
@@ -46,15 +71,13 @@ const TramiteDetail = () => {
     );
   }
 
-  // Initialize checked state lazily
-  if (checked.length !== tramite.requisitos.length) {
-    setChecked(new Array(tramite.requisitos.length).fill(false));
-  }
-
   const toggleCheck = (index: number) => {
     setChecked((prev) => prev.map((v, i) => (i === index ? !v : v)));
   };
 
+  const checkedCount = checked.filter(Boolean).length;
+
+  /** Download checklist as .txt */
   const handleDownload = () => {
     const lines = [
       `Checklist: ${tramite.title}`,
@@ -70,7 +93,7 @@ const TramiteDetail = () => {
       ...tramite.tips.map((t) => `💡 ${t}`),
       "",
       `Más info: ${tramite.url}`,
-      `Generado en MiTramite — tramiton-mx.lovable.app`,,
+      `Generado en MiTramite — mitramite-mx.lovable.app`,
     ];
     const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -81,8 +104,25 @@ const TramiteDetail = () => {
     URL.revokeObjectURL(url);
   };
 
+  /** Share checklist via WhatsApp */
+  const handleWhatsApp = () => {
+    const pendientes = tramite.requisitos.filter((_, i) => !checked[i]);
+    const listos = tramite.requisitos.filter((_, i) => checked[i]);
+    const text = [
+      `📋 *Checklist: ${tramite.title}*`,
+      `${checkedCount}/${tramite.requisitos.length} documentos listos`,
+      "",
+      listos.length > 0 ? `✅ *Listos:*\n${listos.map((r) => `• ${r}`).join("\n")}` : "",
+      pendientes.length > 0 ? `⬜ *Pendientes:*\n${pendientes.map((r) => `• ${r}`).join("\n")}` : "",
+      "",
+      `🔗 Ver guía completa: https://mitramite-mx.lovable.app/tramite/${tramite.slug}`,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+  };
+
   const Icon = tramite.icon;
-  const checkedCount = checked.filter(Boolean).length;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -154,6 +194,11 @@ const TramiteDetail = () => {
                 style={{ width: `${tramite.requisitos.length ? (checkedCount / tramite.requisitos.length) * 100 : 0}%` }}
               />
             </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              {checkedCount === tramite.requisitos.length
+                ? "🎉 ¡Tienes todos los documentos listos!"
+                : `${checkedCount} de ${tramite.requisitos.length} documentos listos`}
+            </p>
             <ul className="mt-6 space-y-3">
               {tramite.requisitos.map((req, i) => (
                 <li
@@ -186,7 +231,6 @@ const TramiteDetail = () => {
             <div className="mt-8 space-y-0">
               {tramite.pasos.map((paso, i) => (
                 <div key={i} className="relative flex gap-4 pb-8 last:pb-0">
-                  {/* Timeline line */}
                   {i < tramite.pasos.length - 1 && (
                     <div className="absolute left-[15px] top-10 h-[calc(100%-24px)] w-0.5 bg-border" />
                   )}
@@ -227,6 +271,13 @@ const TramiteDetail = () => {
               >
                 <Download size={16} />
                 Descargar checklist
+              </button>
+              <button
+                onClick={handleWhatsApp}
+                className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-green-700"
+              >
+                <Share2 size={16} />
+                Compartir por WhatsApp
               </button>
               <Link
                 to="/"
