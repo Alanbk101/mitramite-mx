@@ -1,5 +1,6 @@
 import { Search } from "lucide-react";
 import PaperPlanesBackground from "./PaperPlanesBackground";
+import TypewriterText from "./TypewriterText";
 import logoImg from "@/assets/tramiton-logo-final.svg";
 
 const examples = [
@@ -22,33 +23,37 @@ const HeroSection = ({ search, onSearchChange }: HeroSectionProps) => {
       <div className="container relative mx-auto max-w-3xl text-center">
         <img
           src={logoImg}
-          alt="MiTramite"
+          alt="MiTramite - Tu guía de trámites en México"
           className="mx-auto mb-6 h-auto w-[240px] logo-hover drop-shadow-[0_0_12px_rgba(255,255,255,0.4)] brightness-110 md:w-[320px]"
           style={{ filter: 'brightness(1.3) drop-shadow(0 0 8px rgba(255,255,255,0.3))' }}
         />
         <h1 className="animate-fade-up text-3xl font-extrabold leading-tight tracking-tight md:text-5xl">
-          Deja de googlear trámites.
+          <TypewriterText text="Deja de googlear trámites." speed={45} />
           <br />
-          <span className="text-[hsl(160_94%_30%)]">Te llevamos de la mano.</span>
+          <span className="text-[hsl(160_94%_30%)]">
+            <TypewriterText text="Te llevamos de la mano." speed={45} />
+          </span>
         </h1>
         <p className="mx-auto mt-4 max-w-lg animate-fade-up text-base text-primary-foreground/70 opacity-0 [animation-delay:150ms] md:text-lg">
           Encuentra guías paso a paso para cualquier trámite en México, sin complicaciones.
         </p>
 
         <div className="mx-auto mt-8 max-w-xl animate-fade-up opacity-0 [animation-delay:300ms]">
-          <div className="flex items-center gap-2 rounded-xl bg-card p-2 shadow-lg shadow-primary/20">
-            <Search className="ml-3 shrink-0 text-muted-foreground" size={20} />
+          <div className="flex items-center gap-2 rounded-xl bg-card/95 backdrop-blur-sm p-2 shadow-lg shadow-primary/20 ring-1 ring-border/50">
+            <Search className="ml-3 shrink-0 text-muted-foreground" size={20} aria-hidden="true" />
             <input
               type="text"
               value={search}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="¿Qué trámite necesitas hacer?"
-              className="w-full bg-transparent py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none md:text-base"
+              className="w-full bg-transparent py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-0 md:text-base"
+              aria-label="Buscar trámites"
             />
             {search && (
               <button
                 onClick={() => onSearchChange("")}
-                className="shrink-0 rounded-lg px-3 py-3 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="shrink-0 rounded-lg px-3 py-3 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                aria-label="Limpiar búsqueda"
               >
                 Limpiar
               </button>
@@ -61,7 +66,8 @@ const HeroSection = ({ search, onSearchChange }: HeroSectionProps) => {
             <button
               key={ex}
               onClick={() => onSearchChange(ex)}
-              className="cursor-pointer rounded-full border border-primary-foreground/20 px-3 py-1 text-xs text-primary-foreground/70 transition-colors hover:bg-primary-foreground/10"
+              className="cursor-pointer rounded-full border border-primary-foreground/20 px-3 py-1 text-xs text-primary-foreground/70 transition-colors hover:bg-primary-foreground/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground/50"
+              aria-label={`Buscar ${ex}`}
             >
               {ex}
             </button>

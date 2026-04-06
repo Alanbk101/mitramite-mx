@@ -10,7 +10,7 @@ const Footer = () => (
       <p className="text-xs text-[hsl(215_20%_55%)] max-w-md leading-relaxed">
         ⚠️ Los costos y requisitos pueden cambiar. Consulta siempre el sitio oficial de cada institución. Última actualización: abril 2026.
       </p>
-      <p className="text-[hsl(215_20%_65%)]"><p className="text-[hsl(215_20%_65%)]">© {new Date().getFullYear()} MiTramite. Todos los derechos reservados.</p> Todos los derechos reservados.</p>
+      <p className="text-[hsl(215_20%_65%)]">© {new Date().getFullYear()} MiTramite. Todos los derechos reservados.</p>
     </div>
   </footer>
 );

@@ -3,6 +3,7 @@ import { Send, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { callGemini } from "@/utils/gemini";
+import ChatSkeleton from "@/components/ChatSkeleton";
 
 interface Message {
   role: "user" | "bot";
@@ -27,15 +28,10 @@ const SUGGESTION_CHIPS = [
 
 const getChatErrorMessage = (error: unknown) => {
   const message = error instanceof Error ? error.message : "";
-
-  if (/(RESOURCE_EXHAUSTED|quota|429)/i.test(message)) {
-    return "⚠️ La API key de Gemini alcanzó su límite de uso o no tiene cuota disponible. Actualízala en los secretos del proyecto o activa facturación en Google AI Studio / Google Cloud.";
-  }
-
-  if (/(api key|configurada|secretos del proyecto)/i.test(message)) {
+  if (/(RESOURCE_EXHAUSTED|quota|429)/i.test(message))
+    return "⚠️ La API key de Gemini alcanzó su límite de uso o no tiene cuota disponible.";
+  if (/(api key|configurada|secretos del proyecto)/i.test(message))
     return "🔑 La API key de Gemini no está configurada correctamente en el proyecto.";
-  }
-
   return "😅 Ups, tuve un problema técnico. ¿Puedes intentar de nuevo?";
 };
 
@@ -59,7 +55,6 @@ const Chat = () => {
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || isLoading) return;
-
     setShowChips(false);
     setRetryMessage(null);
     const userMsg: Message = { role: "user", text: text.trim() };
@@ -77,17 +72,8 @@ const Chat = () => {
     } catch (error) {
       const errorText = getChatErrorMessage(error);
       const canRetry = isRetryableError(error);
-
       setRetryMessage(canRetry ? text.trim() : null);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "bot",
-          text: errorText,
-          isError: true,
-          canRetry,
-        },
-      ]);
+      setMessages((prev) => [...prev, { role: "bot", text: errorText, isError: true, canRetry }]);
     } finally {
       setIsLoading(false);
       inputRef.current?.focus();
@@ -108,46 +94,49 @@ const Chat = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col bg-[#F8FAFC]">
-      <header className="shrink-0 border-b border-[#E2E8F0] bg-white/80 backdrop-blur-md px-4 py-4">
+    <div className="flex h-[100dvh] flex-col bg-background">
+      {/* Header */}
+      <header className="shrink-0 border-b border-border bg-card/80 backdrop-blur-md px-4 py-4">
         <div className="mx-auto flex max-w-[800px] items-center gap-3">
           <Link
             to="/"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-[#0EA5E9] hover:bg-[#F0F9FF] transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-primary hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label="Volver al inicio"
           >
             <ArrowLeft size={20} />
           </Link>
           <div className="text-center flex-1">
-            <h1 className="text-xl font-bold text-[#1E293B]">💬 Pregúntale a MiTramite</h1>
-            <p className="text-sm text-[#64748B]">Tu asistente de trámites mexicanos 24/7</p>
+            <h1 className="text-xl font-bold text-foreground">💬 Pregúntale a MiTramite</h1>
+            <p className="text-sm text-muted-foreground">Tu asistente de trámites mexicanos 24/7</p>
           </div>
           <div className="w-8" />
         </div>
       </header>
 
+      {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4">
         <div className="mx-auto max-w-[800px] space-y-4">
           {messages.map((msg, i) => (
-            <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+            <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
               {msg.role === "bot" && (
-                <div className="mr-2 mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#0EA5E9] to-[#059669] text-sm">
+                <div className="mr-2 mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-brand text-sm" aria-hidden="true">
                   🤖
                 </div>
               )}
               <div
                 className={
                   msg.role === "user"
-                    ? "max-w-[80%] rounded-[16px_16px_4px_16px] bg-gradient-to-br from-[#0EA5E9] to-[#059669] px-4 py-3 text-white"
-                    : `max-w-[85%] rounded-[16px_16px_16px_4px] border border-[#E2E8F0] bg-white px-4 py-4 text-[#1E293B] ${msg.isError ? "border-amber-300 bg-amber-50" : ""}`
+                    ? "max-w-[80%] rounded-[16px_16px_4px_16px] bg-gradient-brand px-4 py-3 text-white"
+                    : `max-w-[85%] rounded-[16px_16px_16px_4px] border border-border bg-card px-4 py-4 text-foreground ${msg.isError ? "border-amber-300 bg-amber-50" : ""}`
                 }
               >
                 {msg.role === "bot" ? (
-                  <div className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0.5 prose-strong:text-[#1E293B]">
+                  <div className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0.5 prose-strong:text-foreground">
                     <ReactMarkdown>{msg.text}</ReactMarkdown>
                     {msg.isError && msg.canRetry !== false && (
                       <button
                         onClick={handleRetry}
-                        className="mt-2 rounded-full border border-[#0EA5E9] px-4 py-1.5 text-sm font-medium text-[#0EA5E9] hover:bg-[#0EA5E9] hover:text-white transition-colors"
+                        className="mt-2 rounded-full border border-primary px-4 py-1.5 text-sm font-medium text-primary hover:bg-primary hover:text-primary-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         Reintentar
                       </button>
@@ -160,34 +149,22 @@ const Chat = () => {
             </div>
           ))}
 
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="mr-2 mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#0EA5E9] to-[#059669] text-sm">
-                🤖
-              </div>
-              <div className="rounded-[16px_16px_16px_4px] border border-[#E2E8F0] bg-white px-5 py-4">
-                <div className="flex gap-1.5">
-                  <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[#0EA5E9]" style={{ animationDelay: "0ms" }} />
-                  <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[#0EA5E9]" style={{ animationDelay: "150ms" }} />
-                  <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[#0EA5E9]" style={{ animationDelay: "300ms" }} />
-                </div>
-              </div>
-            </div>
-          )}
+          {isLoading && <ChatSkeleton />}
 
           <div ref={messagesEndRef} />
         </div>
       </div>
 
-      <div className="shrink-0 border-t border-[#E2E8F0] bg-white">
+      {/* Input */}
+      <div className="shrink-0 border-t border-border bg-card">
         {showChips && (
-          <div className="mx-auto max-w-[800px] overflow-x-auto px-4 pt-3 pb-1">
+          <div className="mx-auto max-w-[800px] overflow-x-auto px-4 pt-3 pb-1 scrollbar-hide">
             <div className="flex gap-2 whitespace-nowrap">
               {SUGGESTION_CHIPS.map((chip) => (
                 <button
                   key={chip}
                   onClick={() => sendMessage(chip)}
-                  className="shrink-0 rounded-full border border-[#E2E8F0] bg-[#F0F9FF] px-4 py-2 text-sm text-[#0EA5E9] transition-colors hover:bg-[#0EA5E9] hover:text-white"
+                  className="shrink-0 rounded-full border border-border bg-accent px-4 py-2 text-sm text-primary transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {chip}
                 </button>
@@ -203,12 +180,17 @@ const Chat = () => {
             onKeyDown={handleKeyDown}
             disabled={isLoading}
             placeholder="Escribe tu pregunta sobre trámites..."
-            className="flex-1 h-12 rounded-full border-2 border-[#E2E8F0] bg-white px-5 text-sm text-[#1E293B] placeholder:text-[#94A3B8] focus:border-[#0EA5E9] focus:outline-none disabled:opacity-50"
+            enterKeyHint="send"
+            inputMode="text"
+            autoComplete="off"
+            className="flex-1 h-12 rounded-full border-2 border-border bg-card px-5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none disabled:opacity-50"
+            aria-label="Escribe tu pregunta"
           />
           <button
             onClick={() => sendMessage(input)}
             disabled={!input.trim() || isLoading}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#0EA5E9] to-[#059669] text-white shadow-md transition-transform hover:scale-105 disabled:opacity-40 disabled:hover:scale-100"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-brand text-white shadow-md transition-transform hover:scale-105 disabled:opacity-40 disabled:hover:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label="Enviar mensaje"
           >
             <Send size={18} />
           </button>
