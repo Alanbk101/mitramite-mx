@@ -7,6 +7,12 @@ import {
   Car,
   Baby,
   Stamp,
+  ClipboardList,
+  Calculator,
+  HeartPulse,
+  Building2,
+  ShieldCheck,
+  Hospital,
   type LucideIcon,
 } from "lucide-react";
 
