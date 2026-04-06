@@ -16,6 +16,7 @@ const Header = () => {
           <a href="#tramites" className="transition-colors hover:text-primary">Trámites</a>
           <a href="#como-funciona" className="transition-colors hover:text-primary">¿Cómo funciona?</a>
           <a href="#contacto" className="transition-colors hover:text-primary">Contacto</a>
+          <a href="/chat" className="transition-colors hover:text-primary">💬 Chat IA</a>
         </nav>
 
         <button
